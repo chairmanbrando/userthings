@@ -1,0 +1,20 @@
+/**
+ * If you block `util/u###.js` in the inspector, you can see that DDG loads as a
+ * stark white page at first before loading your theme of choice via JS. Because
+ * there's no time for that JS to load when you do a "bang" search like `!w`,
+ * you will, perhaps appropriately, flashbang youself as DDG redirects you. To
+ * avert that and save your eyes while browsing at night, you've gotta ensure
+ * DDG's body always has a dark color!
+ */
+body {
+    background-color: var(--theme-bg-home-minimal, #1c1c1c) !important;
+}
+
+/**
+ * Once the actual search page is loaded, though, we need to go back to normal.
+ */
+@media (prefers-color-scheme: light) {
+    .site-wrapper {
+        background-color: #f1f1f1;
+    }
+}
