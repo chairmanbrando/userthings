@@ -1,0 +1,43 @@
+html, body {
+   background-color: #0f0f0f;
+}
+
+/* Stop changing this! */
+#full-bleed-container {
+   height: auto !important;
+   min-height: calc(100vh - var(--ytd-watch-flexy-masthead-height)) !important;
+}
+
+#info-container {
+   font-size: 1.1em;
+   margin-bottom: 1rem;
+}
+
+/* Chat is dumb. You can block the iframe itself with uBO: youtube.com/live_chat$domain=www.youtube.com,subdocument */
+#chat-container {
+   display: none;
+}
+
+   #panels-full-bleed-container:empty {
+      display: none;
+   }
+
+/* Random things to kill. */
+ytd-ad-slot-renderer,
+ytd-reel-shelf-renderer,
+yt-mealbar-promo-renderer,
+#offer-module,
+.ytp-ce-element {
+   display: none;
+}
+
+/* This "should" hide the dumb "mix" recommendations in the sidebar. */
+yt-lockup-view-model {
+   display: none !important;
+}
+
+/* Add this body class when watching clips of Australian or UK dashcams to put
+   them back on the correct side of the road! */
+body.australia video.html5-main-video {
+   transform: scaleX(-1);
+}
