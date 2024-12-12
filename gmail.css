@@ -1,0 +1,16 @@
+/* I've changed this a few times now due to generated class names, but I think
+   this might be The One that makes emails actually readable... 🤞 Note that it
+   requires turning off the "chat" and "meet" stuff in the settings tab. */
+[role="navigation"] + div {
+   max-width: 820px;
+}
+
+/* Make the "multi-inbox" labels stand out more. */
+h3[role="button"] {
+   div span {
+      font-size: 1.1rem;
+      font-weight: bold;
+      opacity: 0.7;
+      text-transform: uppercase;
+   }
+}
