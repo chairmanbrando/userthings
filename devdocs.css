@@ -1,0 +1,50 @@
+/* Note: Anything with color is for `html._theme-dark`. Didn't feel like including
+   since I'm never gonna be using the light version. 🤷‍♀️ */
+
+/* Not sure what they changed, but there's no white space or margins anymore. */
+dt span {
+    margin: 0 0.25em;
+}
+
+code + .type {
+    font-style: italic;
+    margin-left: 0.33em;
+}
+
+h1 {
+    white-space: nowrap;
+}
+
+._content {
+    hyphens: none !important;
+}
+
+/* Make these stand out a bit more. */
+.extended-description summary {
+    background-color: rgba(0,0,0, 0.15);
+    border: 1px solid rgba(0,0,0, 0.3);
+    border-radius: 2px;
+    display: inline-block;
+    margin: 0.25em 0;
+    padding: 0 0.5em;
+}
+
+.extended-description summary::before {
+    content: '→ ';
+    font-size: 1em;
+    line-height: 0;
+}
+
+.extended-description[open] summary::before {
+    content: '↓ ';
+}
+
+.extended-description .description {
+    display: block;
+}
+
+/* Only shows if you leave it as `display: list-item`! */
+.extended-description summary::marker {
+    font-size: 1.25em;
+    line-height: 0;
+}
