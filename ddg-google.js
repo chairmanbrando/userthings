@@ -3,10 +3,9 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://duckduckgo.com/*
 // @grant       none
-// @version     1.9
+// @version     1.9.1
 // @author      chairmanbrando
 // @description Adds a clickable link to Google in case you forget your `!g`. Typing a "g" without anything having keyboard focus will also send you there! Finally, you can use the 1-9 keys to go to the respective search results while still on DDG.
-// @todo        `event.keyCode` has been deprecated because of reasons.
 // @noframes
 // ==/UserScript==
 
@@ -17,7 +16,7 @@ const google = 'https://www.google.com/search?q=' + encodeURIComponent(document.
 document.body.addEventListener('keyup', (e) => {
   if (e.target !== document.body) return;
 
-  if (e.keyCode === 71) { // G key!
+  if (['g', 'G'].indexOf(e.key) > -1) {
     window.location.href = google;
   }
 
@@ -29,7 +28,7 @@ document.body.addEventListener('keyup', (e) => {
   let links = document.body.querySelectorAll('ol li:has(article)');
       links = Array.from(links).filter((l) => l.checkVisibility());
 
-  const link = links[e.keyCode - 49].querySelector('h2 a[href]');
+  const link = links[e.key.charCodeAt(0) - 49].querySelector('h2 a[href]');
 
   if (link && link.href) {
     window.location.href = link.href;
