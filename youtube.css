@@ -22,12 +22,17 @@ html, body {
       display: none;
    }
 
+   /* Not sure if this is only used for chat replay, but let's assume it is. */
+   #teaser-carousel {
+      display: none;
+   }
+
 /* Random things to kill. */
+/* .ytp-ce-element, */
 ytd-ad-slot-renderer,
 ytd-reel-shelf-renderer,
 yt-mealbar-promo-renderer,
-#offer-module,
-.ytp-ce-element {
+#offer-module {
    display: none;
 }
 
