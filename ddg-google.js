@@ -27,7 +27,8 @@ document.body.addEventListener('keyup', (e) => {
   // in the first slot that it had hidden for me. Oops.
   let links = document.body.querySelectorAll('ol li:has(article)');
       links = Array.from(links).filter((l) => l.checkVisibility());
-  let link  = links[e.key.charCodeAt(0) - 49];
+
+  let link = links[e.key.charCodeAt(0) - 49];
 
   if (link) {
     link.classList.add('going-to-there');

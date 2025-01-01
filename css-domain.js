@@ -3,30 +3,39 @@
 // @namespace   Violentmonkey Scripts
 // @match       *://*/*
 // @grant       none
-// @version     1.3
+// @version     1.4
 // @author      chairmanbrando
 // @run-at      document-start
 // @description Runs as soon as possible for a web extension to add the page's domain as a class on the `<html>` element.
 // ==/UserScript==
 
 let hn = window.location.hostname.split('.');
-let sr = window.location.pathname.toLowerCase().split('/');
+let sr = null; // Used for reddit only.
 
 while (hn.length > 2) {
     hn.shift();
 }
 
 hn = hn.join('-');
-sr = `${sr[1]}-slash-${sr[2]}`;
+
+if (hn === '0-1') {
+    hn = 'localhost';
+}
+
+if (hn === 'reddit-com') {
+    sr = window.location.pathname.toLowerCase();
+    sr = sr.split('/').filter((p => p.length));
+
+    if (sr.length > 1) {
+        sr = `${sr[0]}-slash-${sr[1]}`;
+    }
+}
 
 function addClassToDamnedRootElement() {
     document.documentElement.classList.add(hn);
 
-    // Special consideration for reddit because I'm there constantly.
-    if (window.location.hostname.indexOf('reddit.com') > -1) {
-        if (sr.length > 1) {
-            document.documentElement.classList.add(sr);
-        }
+    if (sr) {
+        document.documentElement.classList.add(sr);
     }
 }
 
