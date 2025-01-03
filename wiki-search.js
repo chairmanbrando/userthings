@@ -11,7 +11,7 @@
 const input = document.querySelector('input[type="search"]');
   let chain = false;
 
-if (!input) return;
+if (! input) return;
 
 // `keydown` with a `focus()` call is needed to override Firefox's "quick find"
 // functionality, but that means the "/" you type ends up in the input...
