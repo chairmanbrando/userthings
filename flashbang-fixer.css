@@ -1,0 +1,62 @@
+/**
+ * Trying to fix the new-tab flashbang -- a deadly ailment when browsing at
+ * night. The styles below pair with an extension to toggle dark/light mode
+ * where this isn't handled well.
+ *
+ * @link https://github.com/Cimbali/toggle-dark-mode
+ *
+ * Make sure you set your browser's default colors to those shown for dark mode.
+ * You need it to start each tab this way to stop it from flashbanging you.
+ *
+ * Cmd-Shift-L will flip between light and dark mode as needed. Many sites
+ * assume a default white background and black foreground without explicitly
+ * setting them, and you'll have upset them by not adjusting your defaults.
+ *
+ * @note I am as yet unsure what the best selector is. I've tried a bunch:
+ *
+ * - body          -- A bit overbearing and can override styles unnecessarily.
+ * - :where(body)  -- Less specific, so it seems to work pretty well.
+ * - :root         -- This, too, seems to work pretty well.
+ * - :where(:root) -- The least specific, and sometimes too weak, option
+ *   available.
+ */
+
+@media (prefers-color-scheme: light) {
+    :root {
+        background-color: #fff;
+        color: #1c1b22;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        background-color: #1c1b22;
+        color: #fbfbfe;
+    }
+}
+
+/**
+ * Because I'm lazy, I have a script to add a root class using the base
+ * hostname. Using it I can fix those sites, ones I use frequently, instead of
+ * constantly swapping between light and dark mode with Cmd-Shift-L.
+ */
+
+/* Everyone who forgets to set a text color. */
+html:where(
+    .capitalone-com,
+    /* Add more here. */
+) {
+    body {
+        color: #1c1b22;
+    }
+}
+
+/* Everyone who needs a background color set. */
+html:where(
+    .capitalone-com,
+    /* Add more here. */
+) {
+    html, body {
+        background-color: #fff;
+    }
+}
