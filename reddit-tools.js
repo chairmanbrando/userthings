@@ -1,14 +1,27 @@
 // ==UserScript==
-// @name        Reddit: Operations
+// @name        Reddit: Tools and Such
 // @namespace   Violentmonkey Scripts
-// @match       https://old.reddit.com/r/*+*
-// @match       https://old.reddit.com/user/*/m/test*
+// @match       https://old.reddit.com/*
 // @grant       none
-// @version     1.0
+// @version     1.1
 // @author      chairmanbrando
-// @description Adds global functions you can use from the console to assist in subreddit subscriptions.
-// @todo        Add these to the existing `reddit` object. Nothing really gained by that, but it's there, so why not?
 // ==/UserScript==
+
+// If you're not logged in, your preference to open links in new tabs ain't there.
+if (document.querySelector('body:not(.loggedin)')) {
+  let all = Array.from(document.querySelectorAll('.thing a[href]'));
+  all     = all.filter((a) => a.href.indexOf('javascript') === -1);
+  all.forEach((a) => a.target = '_blank');
+}
+
+// Your stuff should new-tab itself too.
+document.querySelectorAll('#header-bottom-right a:not(.pref-lang, [onclick])').forEach((a) => a.target = '_blank');
+
+// -------------------------------------------------------------------------- //
+
+// The following are global functions on `window`. Run them in the console when you're looking at
+// the page that's relevant for them. Yes, these could be in their own script to add them only when
+// you've `@matched` the correct page, but I wanted all the reddit-related stuff in one file.
 
 // Note: These are fairly heavily delayed in their operation because reddit doesn't like when too
 // many things happen too quickly. Your IP address will start getting 429'd for a short while if you
