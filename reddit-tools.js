@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://old.reddit.com/*
 // @grant       none
-// @version     1.1
+// @version     1.2
 // @author      chairmanbrando
 // ==/UserScript==
 
@@ -61,5 +61,27 @@ function addThingsToMultireddit(subs) {
      inpu.value = sub.trim().replace(/\/?r\//, '');
      butt.click();
     }, 4000 * i);
+  });
+}
+
+/**
+ * You can filter crappy subreddits from /r/all which makes it a bit more handy than /r/popular. 
+ * Even with a list stored in your notes, though, this is a painful operation: flip to note, copy 
+ * subreddit name, flip back to browser, paste it into the right input, and submit the form. Send
+ * this function a list (or array) of subreddits and let it handle it for you instead.
+ */
+window.blockSubredditsFromAll = function (subs) {
+  if (typeof subs === 'string') {
+    subs = subs.split(',').map(s => s.trim());
+  }
+
+  const inpu = document.querySelector('input.sr-name');
+  const butt = inpu.nextElementSibling;
+  
+  subs.forEach((sub, i) => {
+    setTimeout(() => {
+      inpu.value = sub.trim().replace(/\/?r\//, '');
+      butt.click();
+    }, 3000 * i);
   });
 }
