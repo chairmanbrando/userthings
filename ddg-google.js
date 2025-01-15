@@ -3,9 +3,10 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://duckduckgo.com/*
 // @grant       none
-// @version     1.9.2
+// @version     1.9.5
 // @author      chairmanbrando
 // @description Adds a clickable link to Google in case you forget your `!g`. Typing a "g" without anything having keyboard focus will also send you there! Finally, you can use the 1-9 keys to go to the respective search results while still on DDG.
+// @require     https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js
 // @noframes
 // ==/UserScript==
 
@@ -40,11 +41,20 @@ document.body.addEventListener('keyup', (e) => {
   }
 });
 
-const $menu = document.querySelector('#react-duckbar ul:first-of-type');
-const $li   = $menu.querySelector('li:last-child').cloneNode(true);
-const $a    = $li.querySelector('a');
+function addGoogleToMenu(menu) {
+  const li = menu.querySelector('li:last-child').cloneNode(true);
+  const a  = li.querySelector('a');
 
-$a.setAttribute('href', google);
-$a.textContent = 'Google It!';
-$li.append($a);
-$menu.append($li);
+  a.setAttribute('href', google);
+  a.textContent = 'Google It!';
+  li.append(a);
+  menu.append(li);
+}
+
+const config = { existing: true, onceOnly: true, timeout: 5000 };
+
+// React is so annoying to tap into. I should've just left this script using
+// timeouts, but I wanted to do it "right". Now I'm nesting `arrive()` calls.
+document.querySelector('#react-duckbar').arrive('ul', config, (ul) => {
+  ul.arrive('li', config, () => addGoogleToMenu(ul));
+});
