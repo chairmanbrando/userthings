@@ -4,7 +4,7 @@
 // @match       *://*/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.0
+// @version     1.1
 // @author      chairmanbrando
 // @description Adds a direct link to top-level asset views -- e.g. you're looking directly at an image.
 // @note        I don't know if this works on Chrome; I use Firefox for all personal browsing because Google is bad.
@@ -58,11 +58,12 @@ style.textContent = styles;
 document.head.appendChild(style);
 
 const href = window.location.href;
+const path = window.location.pathname;
 const a    = document.createElement('a');
 
 a.textContent = '↓';
 a.setAttribute('href', href);
-a.setAttribute('download', href.split('/').pop());
+a.setAttribute('download', path.split('/').pop());
 a.setAttribute('class', 'download');
 
 document.body.appendChild(a);
