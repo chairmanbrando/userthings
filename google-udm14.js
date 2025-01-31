@@ -19,7 +19,7 @@ if (
   window.location.href = window.location.href + '&udm=14';
 }
 
-// Makes it so you can click the "All" link in case you want to see want the AI
+// Makes it so you can click the "All" link in case you want to see what the AI
 // and/or info boxes are for your current search.
 document.addEventListener('DOMContentLoaded', (e) => {
   // This "should" be the "All" link, but I suppose it's not guaranteed.
