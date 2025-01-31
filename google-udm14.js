@@ -20,7 +20,7 @@ if (
 }
 
 // Makes it so you can click the "All" link in case you want to see what the AI
-// and/or info boxes are for your current search.
+// and/or info boxes are doing for your current search.
 document.addEventListener('DOMContentLoaded', (e) => {
   // This "should" be the "All" link, but I suppose it's not guaranteed.
   const first = document.querySelector('a[href^="/search"][role="link"]');
