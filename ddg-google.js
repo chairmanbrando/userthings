@@ -3,14 +3,14 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://duckduckgo.com/*
 // @grant       none
-// @version     1.9.5
+// @version     1.9.6
 // @author      chairmanbrando
 // @description Adds a clickable link to Google in case you forget your `!g`. Typing a "g" without anything having keyboard focus will also send you there! Finally, you can use the 1-9 keys to go to the respective search results while still on DDG.
 // @require     https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js
 // @noframes
 // ==/UserScript==
 
-const google = 'https://www.google.com/search?q=' + encodeURIComponent(document.querySelector('#search_form_input').value);
+const google = 'https://www.google.com/search?q=' + encodeURIComponent(document.querySelector('#search_form_input').value) + '&udm=14';
 
 // On hitting a key, go to Google with your query or one of the found links.
 // Only do this if there's nothing else focused, though.
