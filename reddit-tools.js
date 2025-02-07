@@ -7,6 +7,17 @@
 // @author      chairmanbrando
 // ==/UserScript==
 
+// Returns a random number between `min` and `min + 1000`. Used in `setTimeout()`
+// calls to delay repeated calls a varying (but not too varying) amount.
+function randomDelay(min) {
+  const t = min / 1000,
+        s = min / t;
+
+  return Math.round((Math.random() + t) * s);
+}
+
+// -------------------------------------------------------------------------- //
+
 // If you're not logged in, your preference to open links in new tabs ain't there.
 if (document.querySelector('body:not(.loggedin)')) {
   let all = Array.from(document.querySelectorAll('.thing a[href]'));
@@ -38,7 +49,7 @@ function subscribeToSubreddits() {
   document.querySelectorAll('a.option.add.active').forEach((a, i) => {
     setTimeout(() => {
       a.click();
-    }, 2000 * i);
+    }, randomDelay(4000) * i);
   });
 }
 
@@ -60,7 +71,7 @@ function addThingsToMultireddit(subs) {
     setTimeout(() => {
      inpu.value = sub.trim().replace(/\/?r\//, '');
      butt.click();
-    }, 4000 * i);
+    }, randomDelay(5000) * i);
   });
 }
 
@@ -82,6 +93,6 @@ window.blockSubredditsFromAll = function (subs) {
     setTimeout(() => {
       inpu.value = sub.trim().replace(/\/?r\//, '');
       butt.click();
-    }, 3000 * i);
+    }, randomDelay(4000) * i);
   });
 }
