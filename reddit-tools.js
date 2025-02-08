@@ -61,6 +61,7 @@ function subscribeToSubreddits() {
  */
 function addThingsToMultireddit(subs) {
   if (typeof subs === 'string') {
+    subs = subs.replaceAll('+', ',');
     subs = subs.split(',').map(s => s.trim());
   }
 
