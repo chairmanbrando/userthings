@@ -3,18 +3,44 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://old.reddit.com/*
 // @grant       none
-// @version     1.2
+// @version     1.2.1
 // @author      chairmanbrando
 // ==/UserScript==
 
-// Returns a random number between `min` and `min + 1000`. Used in `setTimeout()`
-// calls to delay repeated calls a varying (but not too varying) amount.
+/**
+ * Returns a random number between `min` and `min + 1000`. Used in `setTimeout()`
+ * calls to delay repeated calls a varying (but not too varying) amount.
+ */
 function randomDelay(min) {
   const t = min / 1000,
         s = min / t;
 
   return Math.round((Math.random() + t) * s);
 }
+
+/**
+ * When using old.reddit.com and RES, `/gallery/*` links on expando'd images are
+ * useless as they redirect back to the comments page in a circle. We need to
+ * replace said links to the image sources within.
+ * 
+ * This event fires on initial loading/expansion of an image as well as actual
+ * click-drag resizing, so we make sure to set a marker for efficiency whether
+ * or not any link adjustment is done.
+ */
+document.body.addEventListener('mediaResize', (e) => {
+  if (e.target.done) return;
+
+  const a = e.target.querySelector('a');
+  const i = e.target.querySelector('img');
+
+  if (a && i) {
+    if (a.href.indexOf('/gallery') > -1) {
+      a.href = i.src;
+    }
+  }
+
+  e.target.done = true;
+});
 
 // -------------------------------------------------------------------------- //
 
