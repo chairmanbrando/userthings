@@ -6,9 +6,8 @@
 // @version     2.1
 // @author      chairmanbrando
 // @description Each post in a multireddit has its rank color-coded based on a hash of its name converted to an RGB hexcode. `.subreddit-*` classes are also added; you can target them with a userstyle to override. Change the hashing salt on L47 to something else to generate new colors.
-// ==/UserScript==
-
 // @todo Add a counter somewhere to see the spread of each subreddit.
+// ==/UserScript==
 
 // Swiped for somewhere on the internet. I forget.
 function stringToHash(string) {
