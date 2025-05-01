@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://duckduckgo.com/*
 // @grant       none
-// @version     1.9.6
+// @version     1.9.7
 // @author      chairmanbrando
 // @description Adds a clickable link to Google in case you forget your `!g`. Typing a "g" without anything having keyboard focus will also send you there! Finally, you can use the 1-9 keys to go to the respective search results while still on DDG.
 // @require     https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js
@@ -11,6 +11,7 @@
 // ==/UserScript==
 
 const google = 'https://www.google.com/search?q=' + encodeURIComponent(document.querySelector('#search_form_input').value) + '&udm=14';
+let   donezo = false;
 
 // On hitting a key, go to Google with your query or one of the found links.
 // Only do this if there's nothing else focused, though.
@@ -42,6 +43,8 @@ document.body.addEventListener('keyup', (e) => {
 });
 
 function addGoogleToMenu(menu) {
+  if (donezo) return;
+
   const li = menu.querySelector('li:last-child').cloneNode(true);
   const a  = li.querySelector('a');
 
@@ -49,6 +52,8 @@ function addGoogleToMenu(menu) {
   a.textContent = 'Google It!';
   li.append(a);
   menu.append(li);
+
+  donezo = true;
 }
 
 const config = { existing: true, onceOnly: true, timeout: 5000 };
