@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://duckduckgo.com/*
 // @grant       none
-// @version     1.9.7
+// @version     1.9.8
 // @author      chairmanbrando
 // @description Adds a clickable link to Google in case you forget your `!g`. Typing a "g" without anything having keyboard focus will also send you there! Finally, you can use the 1-9 keys to go to the respective search results while still on DDG.
 // @require     https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js
@@ -42,6 +42,9 @@ document.body.addEventListener('keyup', (e) => {
   }
 });
 
+// They changed the menu to need even *more* dynamic fetching, so now cloning
+// the last child will clone the first (and only) item. Its classes aren't what
+// we want, so they're just replaced. It doesn't quite match, but oh well.
 function addGoogleToMenu(menu) {
   if (donezo) return;
 
@@ -50,6 +53,8 @@ function addGoogleToMenu(menu) {
 
   a.setAttribute('href', google);
   a.textContent = 'Google It!';
+  a.className = 'cleared-out';
+  a.style.fontWeight = 700;
   li.append(a);
   menu.append(li);
 
