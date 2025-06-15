@@ -1,0 +1,26 @@
+/** Note: This all is meant to be copied into the textarea on the extension's settings page
+    under the "Custom Style" heading. It doesn't say it applies to the code-editing part, 
+    unless "script installation page" is meant to be that, but you can indeed change all
+    the CodeMirror styles from this textarea. **/
+
+.editor-code .CodeMirror {
+  font-family: Consolas, Monaco, monospace;
+}
+
+/* Creates a ruler at 80 characters using the `ch` unit plus the left padding of each line.
+   The ruler is only visual; you'll have to line-break your comments manually. */
+.CodeMirror-lines::after {
+  background: white;
+  content: '';
+  height: 100%;
+  left: calc(80ch + 4px);
+  opacity: 0.1;
+  position: absolute;
+  top: 0;
+  width: 1px;
+}
+
+/* Moves the code off the left edge of the gutter a bit for comfort reasons. */
+.CodeMirror-code > div {
+  padding-left: 0.9ch;
+}
