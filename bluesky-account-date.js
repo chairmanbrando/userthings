@@ -4,12 +4,12 @@
 // @match       https://bsky.app/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.2
+// @version     1.2.1
 // @author      chairmanbrando
-// @description Attempts to add the profile's creation date to their page. Note that Bluesky says somewhere in its docs that this may not be accurate due to the distributed nature of the network protocol, but I'm sure this is only the case for very few accounts.
+// @description Attempts to add the creation date and a posts-per-day average to a user's profile. Note that Bluesky says somewhere in its docs that this may not be accurate due to the distributed nature of the network protocol, but I'm sure this is only the case for very few accounts.
 // ==/UserScript==
 
-function addSomethingToStats(something, after) {
+function addThingToStats(thing, after) {
   const link = profile.querySelector(':scope a[href$="/followers"]');
 
   if (! link) return;
@@ -17,7 +17,7 @@ function addSomethingToStats(something, after) {
   const list = link.parentElement;
   const item = list.querySelector(':scope > div').cloneNode(true);
 
-  item.innerHTML = item.innerHTML.replace(/.+?\s/, `${something} `);
+  item.innerHTML = item.innerHTML.replace(/.+?\s/, `${thing} `);
   item.querySelector(':scope > span').textContent = after;
   list.append(item);
 }
@@ -39,8 +39,8 @@ function addStuffToProfile(data, profile) {
   const days = Math.round((now - created) / (1000 * 24 * 60 * 60));
   const ppd  = (data.postsCount / days).toFixed(2);
 
-  addSomethingToStats(since, 'born');
-  addSomethingToStats(ppd, 'ppd');
+  addThingToStats(since, 'born');
+  addThingToStats(ppd, 'ppd');
 }
 
 function fetchProfileData(username, profile) {
