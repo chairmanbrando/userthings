@@ -36,7 +36,6 @@ function addStuffToProfile(data, profile) {
     day:   'numeric'
   }); // "Oct 9, 2024"
 
-  // @@ We need to limit this to the shown profile!
   const link = profile.querySelector(':scope a[href$="/followers"]');
 
   if (link) {
