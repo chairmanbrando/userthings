@@ -4,7 +4,7 @@
 // @match       https://bsky.app/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.0
+// @version     1.1
 // @author      chairmanbrando
 // @description Attempts to add the profile's creation date to their page.
 // ==/UserScript==
@@ -16,7 +16,7 @@ function addCreationDate(list, date) {
   const item = list.lastChild.cloneNode(true);
 
   item.innerHTML = item.innerHTML.replace(/.+?\s/, `${date} `);
-  item.querySelector('span').textContent = 'born';
+  item.querySelector(':scope > span').textContent = 'born';
 
   list.append(item);
 }
@@ -25,7 +25,7 @@ function addCreationDate(list, date) {
 // creation date. Note that Bluesky says somewhere in its docs that this may not
 // be accurate due to the distributed nature of the network protocol, but I'm
 // sure this is only the case for very few accounts.
-function addStuffToProfile(data) {
+function addStuffToProfile(data, profile) {
   if (! data.createdAt) return;
 
   const created = new Date(data.createdAt);
@@ -36,21 +36,25 @@ function addStuffToProfile(data) {
     day:   'numeric'
   }); // "Oct 9, 2024"
 
-  const link = document.querySelector('a[href$="/followers"]');
+  // @@ We need to limit this to the shown profile!
+  const link = profile.querySelector(':scope a[href$="/followers"]');
 
   if (link) {
     addCreationDate(link.parentElement, date);
   }
 }
 
-function fetchProfileData(profile) {
-  fetch(endpoint + profile).then((resp) => resp.json()).then(addStuffToProfile);
+function fetchProfileData(username, profile) {
+  fetch(endpoint + username)
+    .then((resp) => resp.json())
+    .then((data) => addStuffToProfile(data, profile));
 }
 
 const titleWatch = new MutationObserver((mutations, observer) => {
   if (document.title === lastTitle)    return;
   if (! document.title.includes('(@')) return; // Name (@username) — Bluesky
 
+  username  = document.title.match(/\(@(\S+)\)/).pop();
   lastTitle = document.title;
 
   // Bluesky loads and unloads views by some unknown heuristic, hiding the ones
@@ -60,7 +64,7 @@ const titleWatch = new MutationObserver((mutations, observer) => {
 
   for (profile of profiles) {
     if (profile && profile.checkVisibility()) {
-      fetchProfileData(window.location.href.split('/').pop());
+      fetchProfileData(username, profile);
       break;
     }
   }
