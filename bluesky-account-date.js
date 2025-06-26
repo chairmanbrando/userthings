@@ -4,17 +4,17 @@
 // @match       https://bsky.app/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.2.1
+// @version     1.3
 // @author      chairmanbrando
 // @description Attempts to add the creation date and a posts-per-day average to a user's profile. Note that Bluesky says somewhere in its docs that this may not be accurate due to the distributed nature of the network protocol, but I'm sure this is only the case for very few accounts.
 // ==/UserScript==
 
-function addThingToStats(thing, after) {
-  const link = profile.querySelector(':scope a[href$="/followers"]');
+// Got tired of passing this div around function to function. Most didn't even
+// use it; they simply passed it on untouched. That was a smell, and so is this.
+let visibleProfile = null;
+let lastUsername   = null;
 
-  if (! link) return;
-
-  const list = link.parentElement;
+function addThingToStats(thing, after, list) {
   const item = list.querySelector(':scope > div').cloneNode(true);
 
   item.innerHTML = item.innerHTML.replace(/.+?\s/, `${thing} `);
@@ -22,7 +22,7 @@ function addThingToStats(thing, after) {
   list.append(item);
 }
 
-function addStuffToProfile(data, profile) {
+function addStuffToProfile(data) {
   const created = new Date(data.createdAt);
   const now     = new Date;
 
@@ -39,33 +39,51 @@ function addStuffToProfile(data, profile) {
   const days = Math.round((now - created) / (1000 * 24 * 60 * 60));
   const ppd  = (data.postsCount / days).toFixed(2);
 
-  addThingToStats(since, 'born');
-  addThingToStats(ppd, 'ppd');
+  // Sometimes our profile-data request finishes earlier than the one that pop-
+  // ulates the profile's line of stats. I didn't much feel like doing nested
+  // MutationObservers at the time I was debugging this issue, so I cheated.
+  statsWatch = setInterval(() => {
+    let link = visibleProfile.querySelector(':scope a[data-testid="profileHeaderFollowersButton"]');
+
+    if (link) {
+      addThingToStats(since, 'born', link.parentElement);
+      addThingToStats(ppd, 'spd', link.parentElement);
+      clearInterval(statsWatch);
+    }
+  }, 100);
 }
 
-function fetchProfileData(username, profile) {
-  fetch('https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=' + username)
-    .then((resp) => resp.json())
-    .then((data) => addStuffToProfile(data, profile));
+function fetchProfileData(username) {
+  return fetch('https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=' + username)
+    .then((resp) => resp.json());
 }
-
-let lastTitle = null;
 
 const titleWatch = new MutationObserver((mutations, observer) => {
-  if (document.title === lastTitle)    return;
-  if (! document.title.includes('(@')) return; // Name (@username) — Bluesky
+  if (! document.title.includes('@')) return;
 
-  username  = document.title.match(/\(@(\S+)\)/).pop();
-  lastTitle = document.title;
+  // Profile document titles are formatted in one of the following ways:
+  //
+  // - Name (@username) — Bluesky
+  // - @username — Bluesky
+  //
+  // We have to account for people who don't set a dedicated display name.
+  let username = document.title.match(/\(?@(\S+)\)?/).pop();
+      username = username.replace(')', '');
 
-  const profiles = document.querySelectorAll('div[data-testid="profileScreen"]');
+  // Sometimes the title changes twice at discrete enough times, one without the
+  // display name and then another with it, that our callback here is run twice.
+  // We have to stop execution in that case or we'll end up with dupes.
+  if (username === lastUsername) return;
+
+  lastUsername = username;
 
   // Bluesky loads and unloads views by some unknown heuristic, hiding the ones
-  // that aren't currently being viewed, so more than one profile can exist in
-  // the DOM at any time. Thus, we check for the visible one.
-  for (profile of profiles) {
+  // that aren't currently being viewed, and this means more than one profile
+  // can exist in the DOM at the same time. Thus, we check for the visible one.
+  for (const profile of document.querySelectorAll('div[data-testid="profileScreen"]')) {
     if (profile && profile.checkVisibility()) {
-      fetchProfileData(username, profile);
+      visibleProfile = profile;
+      fetchProfileData(username).then(addStuffToProfile);
       break;
     }
   }
