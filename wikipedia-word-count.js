@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://en.wikipedia.org/wiki/*
 // @grant       none
-// @version     1.0.1
+// @version     1.1.0
 // @author      chairmanbrando
 // @description Attempts to turn the body content of an article into a string to figure out how many words it contains.
 // ==/UserScript==
@@ -12,14 +12,18 @@
 const content = document.querySelector('#bodyContent .mw-parser-output[lang]');
   let cleaned = '';
 
-// Skip many things that would pad the reported length. Invisible things are
-// skipped while certain sections "should" always appear at the bottom, making
-// them a good stopping point. Is this enough? Too much? We'll see.
+// Skip many things, including those not rendered, that would pad the reported
+// length. There's a lot of stuff that can appear in the article body that's not
+// a true part of it.
 for (element of content.querySelectorAll(':scope > *')) {
-  if (! element.checkVisibility())               continue;
-  if (element.querySelector('#See_also'))        break;
-  if (element.querySelector('#References'))      break;
+  if (! element.checkVisibility())       continue;
+  if (element.matches('table.metadata')) continue;
+  if (element.matches('table.nomobile')) continue;
+
+  if (element.querySelector('#External_links'))  break;
   if (element.querySelector('#Further_reading')) break;
+  if (element.querySelector('#References'))      break;
+  if (element.querySelector('#See_also'))        break;
 
   cleaned += element.textContent.trim();
 }
