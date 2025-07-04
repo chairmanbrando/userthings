@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        Easier Wiki Searching
+// @name        Wikipedia: Search Shortcut
 // @namespace   Violentmonkey Scripts
 // @match       *://*/wiki/*
 // @grant       none
