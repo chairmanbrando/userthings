@@ -3,13 +3,13 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://en.wikipedia.org/wiki/*
 // @grant       none
-// @version     1.0
+// @version     1.0.1
 // @author      chairmanbrando
 // @description Attempts to turn the body content of an article into a string to figure out how many words it contains.
 // ==/UserScript==
 
 // I don't know yet if this works on any other skins than the one I'm using.
-const content = document.querySelector('#bodyContent .mw-parser-output');
+const content = document.querySelector('#bodyContent .mw-parser-output[lang]');
   let cleaned = '';
 
 // Skip many things that would pad the reported length. Invisible things are
