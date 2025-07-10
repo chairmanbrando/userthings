@@ -4,7 +4,7 @@
 // @match       https://bsky.app/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.3
+// @version     1.3.1
 // @author      chairmanbrando
 // @description Attempts to add the creation date and a posts-per-day average to a user's profile. Note that Bluesky says somewhere in its docs that this may not be accurate due to the distributed nature of the network protocol, but I'm sure this is only the case for very few accounts.
 // ==/UserScript==
@@ -59,7 +59,8 @@ function fetchProfileData(username) {
 }
 
 const titleWatch = new MutationObserver((mutations, observer) => {
-  if (! document.title.includes('@')) return;
+  if (document.title.includes('did:')) return;
+  if (! document.title.includes('@'))  return;
 
   // Profile document titles are formatted in one of the following ways:
   //
