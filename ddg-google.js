@@ -4,28 +4,43 @@
 // @match       https://duckduckgo.com/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.10.1
+// @version     1.11.0
 // @author      chairmanbrando
-// @description Adds a clickable link to Google in case you forget your `!g`. Typing a "g" without anything having keyboard focus will also send you there! Finally, you can use the 1-9 keys to go to the respective search results while still on DDG.
+// @description Adds a clickable link to Google in case you forget your `!g`. Typing a "g" without anything having keyboard focus will also send you there! "m" will send you to a dictionary and "y" will send you to YouTube. "/" will select the search term for replacement. Finally, you can use the 1-9 keys to go to the respective search results.
 // @require     https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js
 // @noframes
 // ==/UserScript==
 
-const search = encodeURIComponent(document.querySelector('#search_form_input').value);
+const $input = document.querySelector('#search_form_input');
+const search = encodeURIComponent($input.value);
 
 const C = {
   ARRIVE:   { existing: true, onceOnly: true, timeout: 5000 },
   GOOGLEIT: `https://www.google.com/search?q=${search}&udm=14`,
+  MWEBIT:   `https://www.merriam-webster.com/dictionary/${search}`,
+  YTUBEIT:  `https://www.youtube.com/results?search_query=${search}`
 };
 
-// On hitting a key, go to Google with your query or one of the found links. We
-// only do this if there's nothing else focused, though.
+// On hitting a key, go to Google et al. with your query or one of the found
+// links. We only do this if there's nothing else focused, though.
 document.body.addEventListener('keyup', (e) => {
   if (e.target !== document.body) return;
 
-  if (['g', 'G'].indexOf(e.key) > -1) {
-    window.location.href = C.GOOGLEIT;
+  // 'M' clashes with a DDG keyboard shortcut, so you'll have to turn 'em off.
+  // '/' clashes with a Firefox keyboard shortcut for "quick find".
+  switch (e.key) {
+    case 'g' :
+    case 'G' : window.location.href = C.GOOGLEIT; break;
+    case 'm' :
+    case 'M' : window.location.href = C.MWEBIT; break;
+    case 'y' :
+    case 'Y' : window.location.href = C.YTUBEIT; break;
+    case '/' : $input.select(); break;
   }
+
+  const num = e.key.charCodeAt(0) - 49;
+
+  if (num < 0 || num > 8) return;
 
   // The search results don't exist on `DOMContentLoaded`. Also, we need to fil-
   // ter them by those that are visible. I got confused when "1" tried to send
@@ -33,12 +48,11 @@ document.body.addEventListener('keyup', (e) => {
   // that it had hidden for me. Oops.
   let links = document.body.querySelectorAll('ol li:has(article)');
       links = Array.from(links).filter((l) => l.checkVisibility());
-
-  let link = links[e.key.charCodeAt(0) - 49];
+  let link  = links[num];
 
   if (link) {
     link.classList.add('going-to-there');
-    link = link.querySelector('h2 a[href]');
+    link = link.querySelector(':scope h2 a[href]');
 
     if (link && link.href) {
       window.location.href = link.href;
