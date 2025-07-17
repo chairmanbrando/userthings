@@ -4,7 +4,7 @@
 // @match       https://duckduckgo.com/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.11.0
+// @version     1.11.1
 // @author      chairmanbrando
 // @description Adds a clickable link to Google in case you forget your `!g`. Typing a "g" without anything having keyboard focus will also send you there! "m" will send you to a dictionary and "y" will send you to YouTube. "/" will select the search term for replacement. Finally, you can use the 1-9 keys to go to the respective search results.
 // @require     https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js
@@ -18,6 +18,7 @@ const C = {
   ARRIVE:   { existing: true, onceOnly: true, timeout: 5000 },
   GOOGLEIT: `https://www.google.com/search?q=${search}&udm=14`,
   MWEBIT:   `https://www.merriam-webster.com/dictionary/${search}`,
+  WIKIIT:   `https://en.wikipedia.org/w/index.php?search=${search}&title=Special%3ASearch`,
   YTUBEIT:  `https://www.youtube.com/results?search_query=${search}`
 };
 
@@ -33,6 +34,8 @@ document.body.addEventListener('keyup', (e) => {
     case 'G' : window.location.href = C.GOOGLEIT; break;
     case 'm' :
     case 'M' : window.location.href = C.MWEBIT; break;
+    case 'w' :
+    case 'W' : window.location.href = C.WIKIIT; break;
     case 'y' :
     case 'Y' : window.location.href = C.YTUBEIT; break;
     case '/' : $input.select(); break;
