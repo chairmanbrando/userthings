@@ -4,9 +4,9 @@
 // @match       https://bsky.app/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.4.0
+// @version     1.4.1
 // @author      chairmanbrando
-// @description Attempts to add the creation date and a posts-per-day average to a user's profile. Note that Bluesky says somewhere in its docs that this may not be accurate due to the distributed nature of the network protocol, but I'm sure this is only the case for very few accounts.
+// @description Attempts to add the creation date and a posts-per-day average to a user's profile. Note that Bluesky says somewhere in its docs that this may not be accurate due to the distributed nature of the network protocol, but I'm sure this is only the case for very few accounts that might've been created elsewhere.
 // @require     https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js
 // @noframes
 // ==/UserScript==
@@ -18,6 +18,22 @@ function addThingToStats(thing, after, list) {
   item.innerHTML = item.innerHTML.replace(/.+?\s/, `${thing} `);
   item.querySelector(':scope > span').textContent = after;
   list.append(item);
+
+  return item;
+}
+
+// Where is your medium to high rating for posts per day? Decide here. Anything
+// below your range will stay white; anything above it will be fully red. In be-
+// tween will be some shade of orange from yellow-orange to red-orange.
+function colorizeSpammers(thing, ppd) {
+  const range = { mid: 5, hot: 10 };
+
+  if (ppd > range.mid) {
+    let severity = (ppd - range.mid) / (range.hot - range.mid);
+        severity = Math.min(severity, 1);
+
+    thing.style.color = `rgb(255, ${255 - 255 * severity}, 0)`;
+  }
 }
 
 function addStuffToProfile(data, profile) {
@@ -45,9 +61,13 @@ function addStuffToProfile(data, profile) {
 
     if (link) {
       clearInterval(statsWatch);
-      addThingToStats(since, 'born', link.parentElement);
-      addThingToStats(ppd, 'spd', link.parentElement);
 
+      const born = addThingToStats(since, 'born', link.parentElement);
+      const spd  = addThingToStats(ppd, 'spd', link.parentElement);
+
+      colorizeSpammers(spd, ppd);
+
+      // Add class to all stat things in case we want to CSS them.
       link.parentElement.querySelectorAll(':scope > :is(div, a)').forEach((li) => li.classList.add('stat'));
     }
   }, 100);
