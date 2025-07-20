@@ -4,7 +4,7 @@
 // @match       https://bsky.app/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.4.1
+// @version     1.4.2
 // @author      chairmanbrando
 // @description Attempts to add the creation date and a posts-per-day average to a user's profile. Note that Bluesky says somewhere in its docs that this may not be accurate due to the distributed nature of the network protocol, but I'm sure this is only the case for very few accounts that might've been created elsewhere.
 // @require     https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js
@@ -82,17 +82,19 @@ function fetchProfileData(username) {
 
 // It's more efficient to look within a container, but the one that contains
 // profiles shows up asynchronously too and things go awry. `arrive()` is a nicer
-// syntax for basic MutationObserver stuff, and if that class is inefficient then
-// I guess this will be too.
+// syntax for basic MutationObserver stuff, and if that built-in class is in-
+// efficient then I guess this will be too.
 //
 // @@ Doesn't always fire when loading your own profile from the sidebar.
 document.arrive('div[data-testid="profileScreen"]', (profile) => {
-  let username = document.title.match(/@([\w\.-]+)/).pop();
-      username = username.replace(')', ''); // Caught by `\S+`.
+  profile.arrive('div[data-testid="profileHeaderDisplayName"]', { existing: true }, (displayName) => {
+    let username = displayName.parentElement.nextSibling.textContent;
+        username = username.match(/@([\w\.-]+)/);
 
-  if (username) {
-    fetchProfileData(username).then((data) => {
-      addStuffToProfile(data, profile);
-    });
-  }
+    if (username && username.length) {
+      fetchProfileData(username.pop()).then((data) => {
+        addStuffToProfile(data, profile);
+      });
+    }
+  });
 });
