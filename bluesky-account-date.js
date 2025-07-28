@@ -4,7 +4,7 @@
 // @match       https://bsky.app/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.4.2
+// @version     1.4.3
 // @author      chairmanbrando
 // @description Attempts to add the creation date and a posts-per-day average to a user's profile. Note that Bluesky says somewhere in its docs that this may not be accurate due to the distributed nature of the network protocol, but I'm sure this is only the case for very few accounts that might've been created elsewhere.
 // @require     https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js
@@ -62,8 +62,8 @@ function addStuffToProfile(data, profile) {
     if (link) {
       clearInterval(statsWatch);
 
-      const born = addThingToStats(since, 'born', link.parentElement);
-      const spd  = addThingToStats(ppd, 'spd', link.parentElement);
+      const born = addThingToStats(since, 'bornt', link.parentElement);
+      const spd  = addThingToStats(ppd, 'volume', link.parentElement);
 
       colorizeSpammers(spd, ppd);
 
