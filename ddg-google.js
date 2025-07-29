@@ -4,7 +4,7 @@
 // @match       https://duckduckgo.com/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.12.0
+// @version     1.12.1
 // @author      chairmanbrando
 // @description Adds a clickable link to Google in case you forget your `!g`. Typing a "g" without anything having keyboard focus will also send you there! "m" will send you to a dictionary and "y" will send you to YouTube. "/" will select the search term for replacement. Finally, you can use the 1-9 keys to go to the respective search results.
 // @require     https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js
@@ -26,11 +26,13 @@ const C = {
 // links. We only do this if there's nothing else focused, though.
 document.body.addEventListener('keyup', (e) => {
   if (e.target !== document.body) return;
+  if ($input.matches(':focus'))   return;
 
   // 'M' clashes with a DDG keyboard shortcut, so you'll have to turn 'em off.
   // '/' clashes with a Firefox keyboard shortcut for "quick find" if enabled.
+  // Spacebar will still scroll down; dunno if that can be disabled.
   switch (e.key) {
-    case 'Enter' : goToThere(0); return; // same as '1'
+    case ' ' : goToThere(0); e.preventDefault(); return; // same as '1'
     case 'g' :
     case 'G' : window.location.href = C.GOOGLEIT; break;
     case 'm' :
