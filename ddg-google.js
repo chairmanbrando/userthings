@@ -4,50 +4,83 @@
 // @match       https://duckduckgo.com/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.12.1
+// @version     1.13.0
 // @author      chairmanbrando
-// @description Adds a clickable link to Google in case you forget your `!g`. Typing a "g" without anything having keyboard focus will also send you there! "m" will send you to a dictionary and "y" will send you to YouTube. "/" will select the search term for replacement. Finally, you can use the 1-9 keys to go to the respective search results.
+// @description It started by adding a link to Google under the search box. Now it does too much. Check comment inside for list of features.
 // @require     https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js
 // @noframes
 // ==/UserScript==
 
-const $input = document.querySelector('#search_form_input');
-const search = encodeURIComponent($input.value);
+/**
+ * THIS HAS GONE TOO FAR -- FEATURE LIST
+ *
+ * Adds a clickable link to Google in case you forget your `!g`.
+ *
+ * With nothing having keyboard focus, i.e. the default state after a search,
+ * you can hit the following keys to redo your search on the respective site:
+ *
+ *  - d → Merriam-Webster
+ *  - g → Google
+ *  - i → IMDb
+ *  - m → Merriam-Webster
+ *  - w → Wikipedia
+ *  - y → YouTube
+ *
+ * Hitting "/" will highlight the search box so you can do another without using
+ * the mouse to get back up there and the input focused.
+ *
+ * Hitting the spacebar will go to the first result. Your browser may or may not
+ * scroll down a bit on DDG before loading the other site.
+ *
+ * The 1-9 keys will go the matching nth search result. No, 0 does not go to the
+ * tenth because I didn't feel like bothering with it. Yes, this means you can't
+ * get at the tenth with a single keypress, but whene do you ever not go to the
+ * first couple results?
+ *
+ * The J/K keys can be used to highlight an adjacent link, starting with the
+ * first, of course, and then you can go to it with Enter.
+ */
+
+const G = {
+  $input: document.querySelector('#search_form_input'),
+  which:  -1
+};
+
+G.search = encodeURIComponent(G.$input.value);
 
 const C = {
   ARRIVE:   { existing: true, onceOnly: true, timeout: 5000 },
-  GOOGLEIT: `https://www.google.com/search?q=${search}&udm=14`,
-  MWEBIT:   `https://www.merriam-webster.com/dictionary/${search}`,
-  WIKIIT:   `https://en.wikipedia.org/w/index.php?search=${search}&title=Special%3ASearch`,
-  YTUBEIT:  `https://www.youtube.com/results?search_query=${search}`
+  GOOGLEIT: `https://www.google.com/search?q=${G.search}&udm=14`,
+  IMDBIT:   `https://www.imdb.com/find/?q=${G.search}`,
+  MWEBIT:   `https://www.merriam-webster.com/dictionary/${G.search}`,
+  WIKIIT:   `https://en.wikipedia.org/w/index.php?search=${G.search}&title=Special%3ASearch`,
+  YTUBEIT:  `https://www.youtube.com/results?search_query=${G.search}`
 };
 
 // On hitting a key, go to Google et al. with your query or one of the found
 // links. We only do this if there's nothing else focused, though.
-document.body.addEventListener('keyup', (e) => {
+document.body.addEventListener('keydown', (e) => {
   if (e.target !== document.body) return;
-  if ($input.matches(':focus'))   return;
+  if (G.$input.matches(':focus')) return;
+
+  // If this works, nothing below it matters.
+  if (goToLink(e.key.charCodeAt(0) - 49)) return;
 
   // 'M' clashes with a DDG keyboard shortcut, so you'll have to turn 'em off.
   // '/' clashes with a Firefox keyboard shortcut for "quick find" if enabled.
-  // Spacebar will still scroll down; dunno if that can be disabled.
-  switch (e.key) {
-    case ' ' : goToThere(0); e.preventDefault(); return; // same as '1'
-    case 'g' :
-    case 'G' : window.location.href = C.GOOGLEIT; break;
-    case 'm' :
-    case 'M' : window.location.href = C.MWEBIT; break;
-    case 'w' :
-    case 'W' : window.location.href = C.WIKIIT; break;
-    case 'y' :
-    case 'Y' : window.location.href = C.YTUBEIT; break;
-    case '/' : $input.select(); break;
-  }
-
-  const num = e.key.charCodeAt(0) - 49;
-
-  if (num > -1 && num < 9) {
-    goToThere(num);
+  // Spacebar may still scroll down.
+  switch (e.key.toLowerCase()) {
+    case ' ' :     goToLink(0); e.preventDefault(); return; // Same as hitting '1'
+    case 'd' :     window.location.href = C.MWEBIT; break;
+    case 'g' :     window.location.href = C.GOOGLEIT; break;
+    case 'i' :     window.location.href = C.IMDBIT; break;
+    case 'j' :     G.which = selectALink(G.which, 1); break;
+    case 'k' :     G.which = selectALink(G.which, -1); break;
+    case 'm' :     window.location.href = C.MWEBIT; break;
+    case 'w' :     window.location.href = C.WIKIIT; break;
+    case 'y' :     window.location.href = C.YTUBEIT; break;
+    case '/' :     G.$input.select(); e.preventDefault(); break;
+    case 'enter' : goToLink(G.which); break;
   }
 });
 
@@ -65,7 +98,7 @@ function addGoogleToMenu(menu) {
   li.append(a);
 
   // We add our new Google link once the rest of the items have arrived. I could
-  // have done *another* nested `arrive()` call but I didn't. 🤷‍♀️
+  // have done *another* nested `arrive()` call but I didn't.
   const check = setInterval(() => {
     if (menu.querySelectorAll('li').length > 2) {
       menu.querySelector('li:last-child').before(li);
@@ -78,11 +111,18 @@ function addGoogleToMenu(menu) {
 // them by those that are visible. I got confused when "1" tried to send me to a
 // uBO-blocked URL. Turns out there was an ad link in the first slot that it had
 // hidden for me. Oops.
-function goToThere(num) {
-  let links = document.body.querySelectorAll('ol li:has(article)');
-      links = Array.from(links).filter((l) => l.checkVisibility());
+//
+// @dev Optimize by caching them. Update said cache when the list changes.
+function getVisibleLinks() {
+  const links = document.body.querySelectorAll('ol li[data-layout="organic"]:has(article)');
 
-  let link  = links[num];
+  return (links) ? Array.from(links).filter((l) => l.checkVisibility()) : []
+}
+
+// Go to the `num`th visible link in the search results.
+function goToLink(num) {
+  const links = getVisibleLinks();
+    let link  = links[num];
 
   if (link) {
     link.classList.add('going-to-there');
@@ -90,8 +130,31 @@ function goToThere(num) {
 
     if (link && link.href) {
       window.location.href = link.href;
+
+      return true; // Does this even matter?
     }
   }
+
+  return false;
+}
+
+// Select the first or an adjacent link if possible.
+function selectALink(which, modifier = 0) {
+  const links = getVisibleLinks();
+
+  which += modifier;
+  which = Math.max(0, Math.min(which, links.length - 1));
+
+  links.forEach(l => l.classList.remove('selected'));
+
+  const link = links[which];
+
+  if (link) {
+    link.classList.add('selected');
+    link.scrollIntoView(false);
+  }
+
+  return which;
 }
 
 // React is so annoying to tap into. Maybe I should've left this script using
