@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://old.reddit.com/*
 // @grant       none
-// @version     1.2.1
+// @version     1.2.2
 // @author      chairmanbrando
 // ==/UserScript==
 
@@ -53,6 +53,9 @@ if (document.querySelector('body:not(.loggedin)')) {
 
 // Your stuff should new-tab itself too.
 document.querySelectorAll('#header-bottom-right a:not(.pref-lang, [onclick])').forEach((a) => a.target = '_blank');
+
+// Collapse top-level AutoModerator comments because many subreddits make that guy say too much.
+document.querySelectorAll('.sitetable > .thing[data-author="AutoModerator"] a.expand').forEach(a => a.click());
 
 // -------------------------------------------------------------------------- //
 
