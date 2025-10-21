@@ -111,7 +111,7 @@ function addThingsToMultireddit(subs) {
  * subreddit name, flip back to browser, paste it into the right input, and submit the form. Send
  * this function a list (or array) of subreddits and let it handle it for you instead.
  */
-window.blockSubredditsFromAll = function (subs) {
+function blockSubredditsFromAll = function (subs) {
   if (typeof subs === 'string') {
     subs = subs.split(',').map(s => s.trim());
   }
