@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://old.reddit.com/*
 // @grant       none
-// @version     1.3.0
+// @version     1.3.1
 // @author      chairmanbrando
 // ==/UserScript==
 
@@ -17,6 +17,29 @@ function randomDelay(min) {
 
   return Math.round((Math.random() + t) * s);
 }
+
+/**
+ * A "thing" is official reddit nomenclature. In this case we want to collapse a 
+ * particular comment.
+ */
+function collapseThing(thing) {
+  const a = thing.querySelector('a.expand');
+  const f = thing.querySelector('form');
+
+  if (! a || ! f) return;
+
+  a.addEventListener('mouseover', (e) => {
+    if (! f.checkVisibility() && ! a.title) {
+      a.title = f.textContent.replace(/\s+/g, ' ').substr(0, 256) + '…';
+    }
+  });
+
+  if (f.checkVisibility()) {
+    a.click();
+  }
+}
+
+// -------------------------------------------------------------------------- //
 
 /**
  * When using old.reddit.com and RES, `/gallery/*` links on expando'd images are
@@ -42,8 +65,6 @@ document.body.addEventListener('mediaResize', (e) => {
   e.target.done = true;
 });
 
-// -------------------------------------------------------------------------- //
-
 // If you're not logged in, your preference to open links in new tabs ain't there.
 if (document.querySelector('body:not(.loggedin)')) {
   let all = Array.from(document.querySelectorAll('.thing a[href]'));
@@ -55,22 +76,11 @@ if (document.querySelector('body:not(.loggedin)')) {
 // Your stuff should new-tab itself too.
 document.querySelectorAll('#header-bottom-right a:not(.pref-lang, [onclick])').forEach(a => a.target = '_blank');
 
-// Collapse stickied comments because many subreddits toss one into every single
-// post automatically these days. Because these do occasionally matter, we'll
-// slap a preview into the `title` of the expander anchor element.
-document.querySelectorAll('.sitetable > .thing.stickied a.expand').forEach((a) => {
-  a.click();
-
-  a.addEventListener('mouseover', (e) => {
-    const content = e.target.closest('.entry').querySelector('form');
-
-    if (content && ! content.checkVisibility()) {
-      if (! a.title) {
-        a.title = content.textContent.substr(0, 256) + '…';
-      }
-    }
-  });
-});
+// Collapse stickied and top-level AutoModerator comments. Many subreddits toss
+// one into every single post automatically these days. These do occasionally
+// matter, so we'll add a preview into the `title` of the expander anchor.
+document.querySelectorAll('.sitetable > .thing.stickied').forEach(t => collapseThing(t));
+document.querySelectorAll('.sitetable > .thing[data-author="AutoModerator"]').forEach(t => collapseThing(t));
 
 // -------------------------------------------------------------------------- //
 
