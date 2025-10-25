@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://old.reddit.com/*
 // @grant       none
-// @version     1.2.3
+// @version     1.3.0
 // @author      chairmanbrando
 // ==/UserScript==
 
@@ -47,17 +47,30 @@ document.body.addEventListener('mediaResize', (e) => {
 // If you're not logged in, your preference to open links in new tabs ain't there.
 if (document.querySelector('body:not(.loggedin)')) {
   let all = Array.from(document.querySelectorAll('.thing a[href]'));
-  all     = all.filter((a) => a.href.indexOf('javascript') === -1);
-  all.forEach((a) => a.target = '_blank');
+      all = all.filter(a => a.href.indexOf('javascript') === -1);
+
+  all.forEach(a => a.target = '_blank');
 }
 
 // Your stuff should new-tab itself too.
-document.querySelectorAll('#header-bottom-right a:not(.pref-lang, [onclick])').forEach((a) => a.target = '_blank');
+document.querySelectorAll('#header-bottom-right a:not(.pref-lang, [onclick])').forEach(a => a.target = '_blank');
 
-// Collapse top-level AutoModerator comments because many subreddits make that guy say too much.
-// Do it for a stickied comment at the top too, I suppose, because how often do they matter?
-document.querySelectorAll('.sitetable > .thing[data-author="AutoModerator"] a.expand').forEach(a => a.click());
-document.querySelector('.sitetable > .thing.stickied:not([data-author="AutoModerator"]) a.expand').click();
+// Collapse stickied comments because many subreddits toss one into every single
+// post automatically these days. Because these do occasionally matter, we'll
+// slap a preview into the `title` of the expander anchor element.
+document.querySelectorAll('.sitetable > .thing.stickied a.expand').forEach((a) => {
+  a.click();
+
+  a.addEventListener('mouseover', (e) => {
+    const content = e.target.closest('.entry').querySelector('form');
+
+    if (content && ! content.checkVisibility()) {
+      if (! a.title) {
+        a.title = content.textContent.substr(0, 256) + '…';
+      }
+    }
+  });
+});
 
 // -------------------------------------------------------------------------- //
 
