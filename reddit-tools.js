@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://old.reddit.com/*
 // @grant       none
-// @version     1.2.2
+// @version     1.2.3
 // @author      chairmanbrando
 // ==/UserScript==
 
@@ -55,7 +55,9 @@ if (document.querySelector('body:not(.loggedin)')) {
 document.querySelectorAll('#header-bottom-right a:not(.pref-lang, [onclick])').forEach((a) => a.target = '_blank');
 
 // Collapse top-level AutoModerator comments because many subreddits make that guy say too much.
+// Do it for a stickied comment at the top too, I suppose, because how often do they matter?
 document.querySelectorAll('.sitetable > .thing[data-author="AutoModerator"] a.expand').forEach(a => a.click());
+document.querySelector('.sitetable > .thing.stickied a.expand').click();
 
 // -------------------------------------------------------------------------- //
 
