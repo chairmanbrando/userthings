@@ -28,6 +28,10 @@ function collapseThing(thing) {
 
   if (! a || ! f) return;
 
+  // If the expander isn't visible, don't collapse the thing. This way stuff in
+  // your inbox won't get collapsed with no way to undo it.
+  if (! a.checkVisibility()) return;
+
   a.addEventListener('mouseover', (e) => {
     if (! f.checkVisibility() && ! a.title) {
       a.title = f.textContent.replace(/\s+/g, ' ').substr(0, 256) + '…';
