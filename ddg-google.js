@@ -4,7 +4,7 @@
 // @match       https://duckduckgo.com/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.13.0
+// @version     1.13.1
 // @author      chairmanbrando
 // @description It started by adding a link to Google under the search box. Now it does too much. Check comment inside for list of features.
 // @require     https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js
@@ -23,6 +23,7 @@
  *  - g → Google
  *  - i → IMDb
  *  - m → Merriam-Webster
+ *  - r → reddit site search
  *  - w → Wikipedia
  *  - y → YouTube
  *
@@ -42,8 +43,10 @@
  */
 
 const G = {
-  $input: document.querySelector('#search_form_input'),
-  which:  -1
+  $input:   document.querySelector('#search_form_input'),
+  location: window.location.toString(),
+  url:      new URL(window.location),
+  which:    -1
 };
 
 G.search = encodeURIComponent(G.$input.value);
@@ -53,9 +56,12 @@ const C = {
   GOOGLEIT: `https://www.google.com/search?q=${G.search}&udm=14`,
   IMDBIT:   `https://www.imdb.com/find/?q=${G.search}`,
   MWEBIT:   `https://www.merriam-webster.com/dictionary/${G.search}`,
+  REDDIT:   G.location.replace('q=', 'q=site:reddit.com+'),
   WIKIIT:   `https://en.wikipedia.org/w/index.php?search=${G.search}&title=Special%3ASearch`,
   YTUBEIT:  `https://www.youtube.com/results?search_query=${G.search}`
 };
+
+console.log(G, C);
 
 // On hitting a key, go to Google et al. with your query or one of the found
 // links. We only do this if there's nothing else focused, though.
@@ -77,6 +83,7 @@ document.body.addEventListener('keydown', (e) => {
     case 'j' :     G.which = selectALink(G.which, 1); break;
     case 'k' :     G.which = selectALink(G.which, -1); break;
     case 'm' :     window.location.href = C.MWEBIT; break;
+    case 'r' :     window.location.href = C.REDDIT; break;
     case 'w' :     window.location.href = C.WIKIIT; break;
     case 'y' :     window.location.href = C.YTUBEIT; break;
     case '/' :     G.$input.select(); e.preventDefault(); break;
@@ -111,8 +118,6 @@ function addGoogleToMenu(menu) {
 // them by those that are visible. I got confused when "1" tried to send me to a
 // uBO-blocked URL. Turns out there was an ad link in the first slot that it had
 // hidden for me. Oops.
-//
-// @dev Optimize by caching them. Update said cache when the list changes.
 function getVisibleLinks() {
   const links = document.body.querySelectorAll('ol li[data-layout="organic"]:has(article)');
 
@@ -130,8 +135,7 @@ function goToLink(num) {
 
     if (link && link.href) {
       window.location.href = link.href;
-
-      return true; // Does this even matter?
+      return true;
     }
   }
 
