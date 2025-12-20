@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://x.com/*
 // @grant       none
-// @version     1.1
+// @version     1.1.1
 // @author      chairmanbrando
 // @description Replaces the stupid 𝕏 favicon, which is nigh unrecognizable in a
 //              list of tabs, with the old blue bird guy. Oh, and now it also 
@@ -26,4 +26,4 @@ setInterval(() => {
       title.textContent = title.textContent.replace(reXTitle, ' / Twitter');
     }
   }
-}, 250);
+}, 1000);
