@@ -4,7 +4,7 @@
 // @match       https://duckduckgo.com/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.13.1
+// @version     1.13.3
 // @author      chairmanbrando
 // @description It started by adding a link to Google under the search box. Now it does too much. Check comment inside for list of features.
 // @require     https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js
@@ -24,6 +24,7 @@
  *  - i → IMDb
  *  - m → Merriam-Webster
  *  - r → reddit site search
+ *  - s → Startpage
  *  - w → Wikipedia
  *  - y → YouTube
  *
@@ -57,11 +58,10 @@ const C = {
   IMDBIT:   `https://www.imdb.com/find/?q=${G.search}`,
   MWEBIT:   `https://www.merriam-webster.com/dictionary/${G.search}`,
   REDDIT:   G.location.replace('q=', 'q=site:reddit.com+'),
+  SPAGEIT:  `https://www.startpage.com/do/metasearch.pl?query=${G.search}`,
   WIKIIT:   `https://en.wikipedia.org/w/index.php?search=${G.search}&title=Special%3ASearch`,
   YTUBEIT:  `https://www.youtube.com/results?search_query=${G.search}`
 };
-
-console.log(G, C);
 
 // On hitting a key, go to Google et al. with your query or one of the found
 // links. We only do this if there's nothing else focused, though.
@@ -84,6 +84,7 @@ document.body.addEventListener('keydown', (e) => {
     case 'k' :     G.which = selectALink(G.which, -1); break;
     case 'm' :     window.location.href = C.MWEBIT; break;
     case 'r' :     window.location.href = C.REDDIT; break;
+    case 's' :     window.location.href = C.SPAGEIT; break;
     case 'w' :     window.location.href = C.WIKIIT; break;
     case 'y' :     window.location.href = C.YTUBEIT; break;
     case '/' :     G.$input.select(); e.preventDefault(); break;
@@ -100,8 +101,8 @@ function addGoogleToMenu(menu) {
   const li = menu.querySelector('li:last-child').cloneNode(true);
   const a  = li.querySelector('a');
 
-  a.setAttribute('href', C.GOOGLEIT);
-  a.textContent = 'Google It!';
+  a.setAttribute('href', C.SPAGEIT);
+  a.textContent = 'SpIt!';
   li.append(a);
 
   // We add our new Google link once the rest of the items have arrived. I could
