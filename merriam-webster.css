@@ -1,0 +1,55 @@
+a[href="/chatbot"],
+#mw-global-nav-wod,
+#mw-global-nav-features-wordplay,
+#mw-global-nav-rhymes-words {
+    display: none !important;
+}
+
+#subscribe-unabridged,
+#unabridged-promo-redesigned,
+.additional-content-area {
+    display: none;
+}
+
+/* Without this having some height the tab under the main logo overlaps stuff. */
+#main-banner-ad-container {
+    min-height: 42px;
+}
+
+.global-footer {
+    .footer-mast {
+        padding: 0;
+        
+        .footer-mast-content {
+            float: none;
+            width: auto;
+        }
+        
+        .mw-logo-section,
+        .follow-us {
+            display: none;
+        }
+        
+        .footer-internal-links {
+            margin: 1rem 0;
+        
+            .footer-menu {
+                text-align: center;
+            }
+        }
+    }
+
+    .footer-foot {
+        min-height: 0;
+        padding: 0;
+        
+        .footer-foot-content {
+            min-height: 0;
+            padding: 0;
+        }
+
+        .copyright {
+            margin: 0;
+        }
+    }
+}
