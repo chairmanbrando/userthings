@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name        reddit: Bring Back Subscriber Count!
+// @name        Reddit: Bring Back Subscriber Count!
 // @namespace   Violentmonkey Scripts
 // @match       https://old.reddit.com/r/*/
 // @grant       none
-// @version     1.2.3
+// @version     1.2.4
 // @author      chairmanbrando
 // @description reddit recently stopped displaying a subreddit's subscriber
 //              count in favor of a weekly measure of activity: visitors and
@@ -69,6 +69,9 @@ fetch(abouturl).then(r => r.json()).then(about => {
   // has a unit or is a description as expected.
   const units = 'subscribers';
 
-  h1.insertAdjacentHTML('afterend', `<div class="md"><p><strong>${recs}</strong> posts last week</p></div>`);
+  if (recs) {
+    h1.insertAdjacentHTML('afterend', `<div class="md"><p><strong>${recs}</strong> posts last week</p></div>`);
+  }
+  
   h1.insertAdjacentHTML('afterend', `${desc}<div class="md"><p><strong>${subs} ${units}</strong></p></div>`);
 });
