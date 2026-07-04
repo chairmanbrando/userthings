@@ -4,12 +4,19 @@
 // @match       *://*/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.1
+// @version     1.2
 // @author      chairmanbrando
 // @description Adds a direct link to top-level asset views -- e.g. you're looking directly at an image.
-// @note        I don't know if this works on Chrome; I use Firefox for all personal browsing because Google is bad.
 // @note        Install this: https://addons.mozilla.org/en-US/firefox/addon/load-reddit-images-directly/
 // ==/UserScript==
+
+// @@ Known issue: You can't replace `.gif` with `.mp4` in many cases. It'll likely
+// 404 because the transformation of content type is happening on the server. On
+// reddit, for instance, going directly to a GIF link will send you that GIF and
+// not the MP4 you saw by expanding the video on the site. If you download that GIF
+// it will be huge. MP4s on reddit require going through its `preview.redd.it` with
+// some parameter `s` that you probably can't get without API access or editing
+// every URL to pass it along. So, um, don't visit reddit GIF links, I guess.
 
 // Test for being on a single media asset that doesn't care if things are loaded.
 if (! document.querySelector('body > :where(img, video, audio):only-child')) return;
@@ -61,19 +68,33 @@ const href = window.location.href;
 const path = window.location.pathname;
 const a    = document.createElement('a');
 
-a.textContent = '↓';
+a.textContent = '⤓';
 a.setAttribute('href', href);
 a.setAttribute('download', path.split('/').pop());
 a.setAttribute('class', 'download');
+a.setAttribute('title', 'Download and Close Tab');
+
+// Since you can Ctrl-S the media normally anyway, clicking the download button
+// might as well close the tab for you. Delayed a bit #jic.
+a.addEventListener('click', (e) => {
+  setTimeout(() => {
+    window.close();
+  }, 100);
+});
 
 document.body.appendChild(a);
 
-// Get the file's size, but give it a bit to make sure it's loaded.
+let lastSize = null;
+
+// Get the file's size, in a short loop. This way if it's big and/or the server
+// is slow, we'll eventually figure out its full size.
 const interval = setInterval(() => {
   const size = getFileSize(href);
 
-  if (size) {
+  if (size && size === lastSize) {
     a.textContent += size;
     clearInterval(interval);
+  } else {
+    lastSize = size;
   }
-}, 1000);
+}, 100);
