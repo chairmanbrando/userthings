@@ -5,7 +5,7 @@
 // @exclude-match  https://x.com/*
 // @exclude-match  https://xcancel.com/*
 // @grant          none
-// @version        1.0
+// @version        1.1
 // @author         chairmanbrando
 // @description    While I would usually add a Redirection entry for something
 //                 like this, sometimes you do need to visit the actual hellsite.
@@ -19,5 +19,7 @@ document.body.addEventListener('click', e => {
 
   if (e.target.href.includes('x.com')) {
     e.target.href = e.target.href.replace('x.com', 'xcancel.com');
+  } else if (e.target.href.includes('twitter.com')) {
+    e.target.href = e.target.href.replace('twitter.com', 'xcancel.com');
   }
 }, true);
