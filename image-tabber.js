@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @match       *://*/*
 // @grant       none
-// @version     1.1.4
+// @version     1.1.7
 // @author      chairmanbrando
 // @description I don't think Alt- or Option-clicking on images does anything by
 //              default, so why not use that as a trigger to open an image in a
@@ -24,7 +24,10 @@ function urlKeepOnly(url, keeper) {
   return urlo.toString();
 }
 
-// @@ Is it smarter or dumber to use the image's hostname instead?
+function urlParamValue(url, param) {
+  return new URL(url).searchParams.get(param);
+}
+
 document.addEventListener('click', (e) => {
   if (e.altKey && e.target.tagName === 'IMG') {
     let host = window.location.hostname;
@@ -35,14 +38,19 @@ document.addEventListener('click', (e) => {
       src = (src.length > 1) ? decodeURIComponent(src[1]) : src[0];
     }
 
-    // @@ A potentially better option exists: https://gist.github.com/Tarrgon/a58375cd3c1f15d8fd4238a2a7df35b5
     if (host.includes('bsky.app')) {
       src = src.replace('feed_thumbnail', 'feed_fullsize');
+      src = src.replace('avatar_thumbnail', 'avatar');
     }
 
     // I don't read this dumb site, but it's the first not-AP one I hit.
     else if (host.includes('ft.com')) {
       src = urlKeepOnly(src, 'source');
+    }
+
+    // Use the image source directly if it makes sense.
+    else if (e.target.src.includes('redditmedia.com')) {
+      src = src.split('?')[0];
     }
 
     else if (host.includes('richmonder.org')) {
@@ -54,7 +62,16 @@ document.addEventListener('click', (e) => {
       src = (src.length > 1) ? 'https' + decodeURIComponent(src[1]) : src[0];
     }
 
+    else if (host.includes('washingtonpost.com')) {
+      src = urlParamValue(src, 'src');
+    }
+
+    else if (host.includes('youtube.com')) {
+      src = src.replace('s88', 's888');
+    }
+
     window.open(src, '_blank');
     e.preventDefault();
+    e.stopImmediatePropagation();
   }
 }, true); // true = capture phase
