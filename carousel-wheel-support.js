@@ -33,6 +33,6 @@ function wheelMeBaby(selector) {
 
 const domain = new URL(window.location.href).hostname;
 
-if (domain.includes('bsky.app'))      wheelMeBaby('button[aria-label$="image"]')
-if (domain.includes('imdb.com'))      wheelMeBaby('.media-viewer__page-right')
-if (domain.includes('wikipedia.org')) wheelMeBaby('.mw-mmv-button')
+if (domain.includes('bsky.app'))      wheelMeBaby('button[aria-label$="image"]');
+if (domain.includes('imdb.com'))      wheelMeBaby('.media-viewer__page-right');
+if (domain.includes('wikipedia.org')) wheelMeBaby('.mw-mmv-button');
