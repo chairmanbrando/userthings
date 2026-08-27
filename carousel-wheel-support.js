@@ -16,8 +16,8 @@
 // ==/UserScript==
 
 function maybeSendArrowKeyInstead(e, selector, prereq) {
-  if (! Array.from(document.querySelectorAll(selector)).some(el => el.checkVisibility())) return;
-  if (! Array.from(document.querySelectorAll(prereq)).some(el => el.checkVisibility())) return;
+  if (selector && ! Array.from(document.querySelectorAll(selector)).some(el => el.checkVisibility())) return;
+  if (prereq && ! Array.from(document.querySelectorAll(prereq)).some(el => el.checkVisibility())) return;
 
   e.preventDefault();
 
@@ -25,6 +25,7 @@ function maybeSendArrowKeyInstead(e, selector, prereq) {
   const key     = e.deltaY < 0 ? 'ArrowLeft' : 'ArrowRight';
   const keyCode = key === 'ArrowLeft' ? 37 : 39;
 
+  // @todo Can we also check that this is hovered? Or will other elements laying on top get in the way?
   if (prereq) {
     prereq = document.querySelector(prereq);
     prereq.setAttribute('tabindex', '-1');
