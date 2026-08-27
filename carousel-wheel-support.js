@@ -42,6 +42,6 @@ function wheelMeBaby(selector, prereq = null) {
 const domain = new URL(window.location.href).hostname;
 
 if (domain.includes('apnews.com'))    wheelMeBaby('.flickity-button', '.CarouselOverlay-slides');
-if (domain.includes('bsky.app'))      wheelMeBaby('button[aria-label$="image"]');
+if (domain.includes('bsky.app'))      wheelMeBaby(':is(button[aria-label="Next image"], button[aria-label="Previous image"])');
 if (domain.includes('imdb.com'))      wheelMeBaby('.media-viewer__page-right');
 if (domain.includes('wikipedia.org')) wheelMeBaby('.mw-mmv-button');
