@@ -2,8 +2,11 @@
 // @name        Reddit: Bring Back Subscriber Count!
 // @namespace   Violentmonkey Scripts
 // @match       https://old.reddit.com/r/*/
+// @exclude-match https://old.reddit.com/r/all/*
+// @exclude-match https://old.reddit.com/r/popular/*
+// @exclude-match https://old.reddit.com/r/friends/*
 // @grant       none
-// @version     1.2.4
+// @version     1.2.5
 // @author      chairmanbrando
 // @description reddit recently stopped displaying a subreddit's subscriber
 //              count in favor of a weekly measure of activity: visitors and
@@ -54,7 +57,7 @@ function countPostsWithinPastWeek() {
 const subreddit = window.location.pathname.match(/\/r\/(\w+)\//)[1];
 const abouturl  = `https://old.reddit.com/r/${subreddit.toLowerCase()}/about.json`;
 
-fetch(abouturl).then(r => r.json()).then(about => {
+fetch(abouturl).then((r) => r.json()).then(about => {
   const h1   = document.querySelector('h1.redditname');
   const subs = about.data.subscribers.toLocaleString();
   const desc = decodeHtml(about.data.public_description_html);
@@ -72,6 +75,6 @@ fetch(abouturl).then(r => r.json()).then(about => {
   if (recs) {
     h1.insertAdjacentHTML('afterend', `<div class="md"><p><strong>${recs}</strong> posts last week</p></div>`);
   }
-  
+
   h1.insertAdjacentHTML('afterend', `${desc}<div class="md"><p><strong>${subs} ${units}</strong></p></div>`);
 });
