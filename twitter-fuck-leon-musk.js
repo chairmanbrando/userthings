@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name           Twitter: Fuck That Neo-Nazi Bitch
+// @name           Global: Fuck That Neo-Nazi Bitch
 // @namespace      Violentmonkey Scripts
 // @match          *://*/*
 // @exclude-match  https://x.com/*
 // @exclude-match  https://xcancel.com/*
 // @grant          none
-// @version        1.2
+// @version        1.2.1
 // @author         chairmanbrando
 // @description    While I would usually add a Redirection entry for something
 //                 like this, sometimes you do need to visit the actual hellsite.
@@ -14,12 +14,16 @@
 //                 the domain once I'm there if I need to.
 // ==/UserScript==
 
-document.body.addEventListener('click', e => {
+function doTheThing(e) {
   const link = e.target.closest('a');
   const patt = /:\/\/(www\.)?(x|twitter)\.com/; // ://x.com, ://www.x.com, ://twitter.com, ://www.twitter.com
 
   if (link && patt.test(link.href)) {
     e.stopImmediatePropagation();
     link.href = link.href.replace(patt, '://xcancel.com');
+    link.target = '_blank';
   }
-}, true);
+}
+
+document.body.addEventListener('click', e => doTheThing(e), true);
+document.body.addEventListener('auxclick', e => doTheThing(e), true);
