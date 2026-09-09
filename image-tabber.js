@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @match       *://*/*
 // @grant       none
-// @version     1.1.7
+// @version     1.1.9
 // @author      chairmanbrando
 // @description I don't think Alt- or Option-clicking on images does anything by
 //              default, so why not use that as a trigger to open an image in a
@@ -49,12 +49,16 @@ document.addEventListener('click', (e) => {
     }
 
     // Use the image source directly if it makes sense.
-    else if (e.target.src.includes('redditmedia.com')) {
+    else if (src.includes('redditmedia.com')) {
       src = src.split('?')[0];
     }
 
     else if (host.includes('richmonder.org')) {
       src = src.replace(/\/size\/w\d+/, '')
+    }
+
+    else if (src.includes('squarespace-cdn.com')) {
+      src = src.split('?')[0];
     }
 
     else if (host.includes('substack.com')) {
