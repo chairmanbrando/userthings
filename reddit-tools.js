@@ -5,7 +5,7 @@
 // @grant       none
 // @version     1.4.5
 // @author      chairmanbrando
-// @description Your mom sucks too.
+// @description Random things that might be useful or not.
 // ==/UserScript==
 
 /**
