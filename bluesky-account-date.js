@@ -4,9 +4,13 @@
 // @match       https://bsky.app/*
 // @grant       none
 // @run-at      document-idle
-// @version     1.4.3
+// @version     1.4.4
 // @author      chairmanbrando
-// @description Attempts to add the creation date and a posts-per-day average to a user's profile. Note that Bluesky says somewhere in its docs that this may not be accurate due to the distributed nature of the network protocol, but I'm sure this is only the case for very few accounts that might've been created elsewhere.
+// @description Attempts to add the creation date and a posts-per-day average to
+//              a user's profile. Note that Bluesky says somewhere in its docs
+//              that this may not be accurate due to the distributed nature of
+//              the network protocol, but I'm sure this is only the case for
+//              very few accounts that might've been created elsewhere.
 // @require     https://raw.githubusercontent.com/uzairfarooq/arrive/master/minified/arrive.min.js
 // @noframes
 // ==/UserScript==
@@ -88,11 +92,11 @@ function fetchProfileData(username) {
 // @@ Doesn't always fire when loading your own profile from the sidebar.
 document.arrive('div[data-testid="profileScreen"]', (profile) => {
   profile.arrive('div[data-testid="profileHeaderDisplayName"]', { existing: true }, (displayName) => {
-    let username = displayName.parentElement.nextSibling.textContent;
-        username = username.match(/@([\w\.-]+)/);
+    const username = location.href.match(/profile\/([\w\.-]+)/);
 
     if (username && username.length) {
       fetchProfileData(username.pop()).then((data) => {
+        console.log('BACDA fetched:', data);
         addStuffToProfile(data, profile);
       });
     }
